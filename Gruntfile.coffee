@@ -1,7 +1,7 @@
 module.exports = (grunt)->
 
   # Run `grunt server` for live-reloading development environment
-  grunt.registerTask('server', [ 'build', 'livereload-start', 'karma:background', 'express', 'regarde' ])
+  grunt.registerTask('server', [ 'build', 'karma:background', 'express', 'watch' ])
 
   # Run `grunt test` (used by `npm test`) for continuous integration (e.g. Travis)
   grunt.registerTask('test', [ 'build', 'karma:unit' ])
@@ -117,11 +117,11 @@ module.exports = (grunt)->
     less:
       '<%= BUILD_DIR %>/app/styles/app.css': '<%= CLIENT_DIR %>/app/styles/app.less'
 
-    # Support live-reloading of all non-Bower resources
-    livereload:
-      options:
-        base:       '<%= BUILD_DIR %>'
-      files:        '<%= BUILD_DIR + ALL_FILES %>'
+    # # Support live-reloading of all non-Bower resources
+    # livereload:
+    #   options:
+    #     base:       '<%= BUILD_DIR %>'
+    #   files:        '<%= BUILD_DIR + ALL_FILES %>'
 
     # Minify app `.css` resources -> `.min.css`
     mincss:
@@ -146,11 +146,15 @@ module.exports = (grunt)->
       jshint:       [ grunt: true, args: [ 'jshint' ] ]
 
     # "watch" distinct types of files and re-prepare accordingly
-    regarde:
+    watch:
+      options:
+        nospawn:    true
+        livereload: true
+
       # Any public-facing changes should reload the browser & re-run tests (which may depend on those resources)
       build:
         files:      '<%= BUILD_DIR + ALL_FILES %>'
-        tasks:      [ 'livereload', 'karma:background:run' ]
+        tasks:      [ 'karma:background:run' ]
 
       # Changes to app code should be validated and re-copied to the `build`, triggering `regarde:build`
       js:
@@ -165,7 +169,7 @@ module.exports = (grunt)->
       # Changes to server-side code should validate, restart the server, & refresh the browser
       server:
         files:      '<%= SERVER_DIR + ALL_FILES %>'
-        tasks:      [ 'parallel:jshint', 'express', 'livereload' ]
+        tasks:      [ 'parallel:jshint', 'express' ]
 
       # Changes to app templates should re-copy & re-compile them, triggering `regarde:build`
       templates:
@@ -197,8 +201,8 @@ module.exports = (grunt)->
   grunt.loadNpmTasks('grunt-contrib-livereload')
   grunt.loadNpmTasks('grunt-contrib-mincss')
   grunt.loadNpmTasks('grunt-contrib-uglify')
+  grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-express-server')
   grunt.loadNpmTasks('grunt-karma')
-  grunt.loadNpmTasks('grunt-regarde')
   grunt.loadNpmTasks('grunt-parallel')
   grunt.loadNpmTasks('grunt-usemin')

@@ -20,6 +20,7 @@ app.use(api);
 app.use(express.static(path.join(__dirname, '../build')));
 app.use(app.router);
 
+// consol.log('foo');
 if ('development' === app.get('env')) {
   app.use(express.errorHandler());
 }
